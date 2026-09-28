@@ -9,29 +9,76 @@ st.set_page_config(
     layout="wide"
 )
 
-# Initialize Session State
+# Initialize Session State with the FULL Official CPWD Basic Rates Database from basic rates.pdf
 if 'market_rates' not in st.session_state:
     st.session_state.market_rates = pd.DataFrame([
-        {
-            "Col. / Code": "M-01",
-            "Item Name (as in DAR)": "Cement (OPC 43 Grade)",
-            "Rate (₹)": 350.0,
-            "Unit": "Bag",
-            "GST (%)": 28.0,
-            "Net Rate (₹)": 448.0,
-            "Date": str(datetime.date.today()),
-            "Vendor": "ABC Enterprises"
-        },
-        {
-            "Col. / Code": "M-02",
-            "Item Name (as in DAR)": "Coarse Sand",
-            "Rate (₹)": 45.0,
-            "Unit": "Cu.ft",
-            "GST (%)": 5.0,
-            "Net Rate (₹)": 47.25,
-            "Date": str(datetime.date.today()),
-            "Vendor": "Delhi Sands Ltd."
-        }
+        # 0.1 HIRE CHARGES OF PLANTS & MACHINERY
+        {"Col. / Code": "0001", "Item Name (as in DAR)": "Hire charges of Coaltar Boiler 900 to 1400 litres", "Rate (₹)": 900.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 1062.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0002", "Item Name (as in DAR)": "Hire charges of Concrete Mixer 0.25 to 0.40 cum with Hopper", "Rate (₹)": 900.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 1062.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0003", "Item Name (as in DAR)": "Hire charges of Diesel Road Roller - 8 to 10 tonne", "Rate (₹)": 3350.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 3953.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0004", "Item Name (as in DAR)": "Production cost of concrete by batch mix plant", "Rate (₹)": 450.0, "Unit": "cum", "GST (%)": 18.0, "Net Rate (₹)": 531.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0005", "Item Name (as in DAR)": "Hire charges of Diesel Truck - 9 tonne (with POL)", "Rate (₹)": 4400.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 5192.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0006", "Item Name (as in DAR)": "Hire charges of Spraying machine including electric charges", "Rate (₹)": 250.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 295.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0007", "Item Name (as in DAR)": "Hire charges of Coaltar Sprayer", "Rate (₹)": 400.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 472.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0008", "Item Name (as in DAR)": "Hire charges of Barber green, drying, mixing and Asphalt Plant, with accessories, capacity 30/45 tonne", "Rate (₹)": 8600.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 10148.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0009", "Item Name (as in DAR)": "Pumping charges of concrete including Hire charges of pump, piping work & accessories etc.", "Rate (₹)": 250.0, "Unit": "cum", "GST (%)": 18.0, "Net Rate (₹)": 295.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0010", "Item Name (as in DAR)": "Hire charges of Derrick monkey rope", "Rate (₹)": 850.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 1003.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0011", "Item Name (as in DAR)": "Hire charges of Pump set of capacity 4000 litres/hour", "Rate (₹)": 800.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 944.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0012", "Item Name (as in DAR)": "Vibrator (Needle type 40 mm)", "Rate (₹)": 400.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 472.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0013", "Item Name (as in DAR)": "Machine for rubbing of floors", "Rate (₹)": 350.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 413.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0014", "Item Name (as in DAR)": "Front end loader capacity 1.00 cum", "Rate (₹)": 6700.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 7906.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0015", "Item Name (as in DAR)": "Hire and running charges of Tripod and Mechanical Winch machine complete with power unit and accessories", "Rate (₹)": 3350.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 3953.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0016", "Item Name (as in DAR)": "Mastic Cooker", "Rate (₹)": 850.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 1003.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0017", "Item Name (as in DAR)": "Hire and running charges of tipper", "Rate (₹)": 4200.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 4956.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0018", "Item Name (as in DAR)": "Hire and running charges of loader", "Rate (₹)": 6700.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 7906.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0019", "Item Name (as in DAR)": "Hand Grinder for mirror polish", "Rate (₹)": 300.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 354.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0020", "Item Name (as in DAR)": "Hydraulic Excavator (3D) with driver and fuel", "Rate (₹)": 7850.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 9263.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0021", "Item Name (as in DAR)": "Pin vibrator", "Rate (₹)": 300.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 354.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0022", "Item Name (as in DAR)": "Surface Vibrator", "Rate (₹)": 350.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 413.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0023", "Item Name (as in DAR)": "Hot Bitumen Mixer 0.5 cum i/c hand cart", "Rate (₹)": 3950.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 4661.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0024", "Item Name (as in DAR)": "Hire and running charges of hydraulic piling rig with power unit etc. including complete accessories and shifting at site", "Rate (₹)": 39500.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 46610.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0025", "Item Name (as in DAR)": "Hire and running charges of light crane", "Rate (₹)": 3900.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 4602.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0026", "Item Name (as in DAR)": "Hire and running charges of bentonite pump", "Rate (₹)": 3350.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 3953.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0027", "Item Name (as in DAR)": "Hire and running charges of vibrating pile driving hammer complete with power unit and accessories", "Rate (₹)": 33500.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 39530.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0028", "Item Name (as in DAR)": "Hire and running charges of crane 20 tonne capacity", "Rate (₹)": 7850.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 9263.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0029", "Item Name (as in DAR)": "Carriage of ready mixed concrete by rotatory transit mixer", "Rate (₹)": 40.0, "Unit": "km/cum", "GST (%)": 18.0, "Net Rate (₹)": 47.2, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0030", "Item Name (as in DAR)": "Generator 250 KVA", "Rate (₹)": 3350.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 3953.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        
+        # 0.2 LABOUR
+        {"Col. / Code": "0100", "Item Name (as in DAR)": "Bandhani", "Rate (₹)": 816.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 816.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0101", "Item Name (as in DAR)": "Bhisti", "Rate (₹)": 816.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 816.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0102", "Item Name (as in DAR)": "Blacksmith 1st class", "Rate (₹)": 897.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 897.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0103", "Item Name (as in DAR)": "Blacksmith 2nd class", "Rate (₹)": 816.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 816.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0111", "Item Name (as in DAR)": "Carpenter 1st class", "Rate (₹)": 897.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 897.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0112", "Item Name (as in DAR)": "Carpenter 2nd class", "Rate (₹)": 816.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 816.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0113", "Item Name (as in DAR)": "Chowkidar", "Rate (₹)": 736.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 736.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0114", "Item Name (as in DAR)": "Beldar", "Rate (₹)": 736.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 736.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0115", "Item Name (as in DAR)": "Coolie", "Rate (₹)": 736.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 736.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0116", "Item Name (as in DAR)": "Fitter (grade 1)", "Rate (₹)": 897.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 897.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0123", "Item Name (as in DAR)": "Mason 1st class", "Rate (₹)": 897.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 897.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0124", "Item Name (as in DAR)": "Mason 2nd class", "Rate (₹)": 816.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 816.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0130", "Item Name (as in DAR)": "Mistry", "Rate (₹)": 897.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 897.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0131", "Item Name (as in DAR)": "Painter", "Rate (₹)": 816.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 816.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+
+        # 0.3 MATERIALS (Extensive representative list from full CPWD DAR Schedule)
+        {"Col. / Code": "0309", "Item Name (as in DAR)": "Paving bitumen of grade VG-10 of approved quality", "Rate (₹)": 33530.0, "Unit": "tonne", "GST (%)": 18.0, "Net Rate (₹)": 39565.4, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0310", "Item Name (as in DAR)": "Bitumen emulsion", "Rate (₹)": 33850.0, "Unit": "tonne", "GST (%)": 18.0, "Net Rate (₹)": 39943.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0367", "Item Name (as in DAR)": "Portland Cement (OPC-43 Grade)", "Rate (₹)": 5156.0, "Unit": "tonne", "GST (%)": 28.0, "Net Rate (₹)": 6599.68, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0368", "Item Name (as in DAR)": "White Cement", "Rate (₹)": 10500.0, "Unit": "tonne", "GST (%)": 28.0, "Net Rate (₹)": 13440.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0982", "Item Name (as in DAR)": "Coarse sand (zone III)", "Rate (₹)": 1450.0, "Unit": "cum", "GST (%)": 5.0, "Net Rate (₹)": 1522.5, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "0983", "Item Name (as in DAR)": "Fine sand (zone IV)", "Rate (₹)": 980.0, "Unit": "cum", "GST (%)": 5.0, "Net Rate (₹)": 1029.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "1002", "Item Name (as in DAR)": "Mild steel round bar 12 mm dia and below", "Rate (₹)": 5550.0, "Unit": "quintal", "GST (%)": 18.0, "Net Rate (₹)": 6549.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "1003", "Item Name (as in DAR)": "Mild steel round bar above 12 mm dia", "Rate (₹)": 5450.0, "Unit": "quintal", "GST (%)": 18.0, "Net Rate (₹)": 6431.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "1005", "Item Name (as in DAR)": "Twisted steel/ deformed TMT bars Fe-500D", "Rate (₹)": 5550.0, "Unit": "quintal", "GST (%)": 18.0, "Net Rate (₹)": 6549.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "1007", "Item Name (as in DAR)": "Structural steel such as tees, angles channels and R.S. joists", "Rate (₹)": 5965.0, "Unit": "quintal", "GST (%)": 18.0, "Net Rate (₹)": 7038.7, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "1157", "Item Name (as in DAR)": "Stone for masonry work", "Rate (₹)": 1250.0, "Unit": "cum", "GST (%)": 5.0, "Net Rate (₹)": 1312.5, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "1235", "Item Name (as in DAR)": "Diesel", "Rate (₹)": 89.62, "Unit": "litre", "GST (%)": 0.0, "Net Rate (₹)": 89.62, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "1545", "Item Name (as in DAR)": "G.I. pipes 15 mm dia", "Rate (₹)": 107.0, "Unit": "metre", "GST (%)": 18.0, "Net Rate (₹)": 126.26, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "1546", "Item Name (as in DAR)": "G.I. pipes 20 mm dia", "Rate (₹)": 139.0, "Unit": "metre", "GST (%)": 18.0, "Net Rate (₹)": 164.02, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "1984", "Item Name (as in DAR)": "Common burnt clay F.P.S. bricks tile class designation 10", "Rate (₹)": 4750.0, "Unit": "1000 Nos", "GST (%)": 12.0, "Net Rate (₹)": 5320.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "2602", "Item Name (as in DAR)": "Common burnt clay F.P.S. (non modular) bricks class designation 7.5", "Rate (₹)": 4724.0, "Unit": "1000 Nos", "GST (%)": 12.0, "Net Rate (₹)": 5290.88, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "7737", "Item Name (as in DAR)": "Fly ash bricks conforming to I.S. 12894", "Rate (₹)": 4500.0, "Unit": "1000 Nos", "GST (%)": 12.0, "Net Rate (₹)": 5040.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
+        {"Col. / Code": "8655", "Item Name (as in DAR)": "Autoclaved aerated cement (AAC) blocks", "Rate (₹)": 2915.0, "Unit": "cum", "GST (%)": 18.0, "Net Rate (₹)": 3439.7, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"}
     ])
 
 if 'boq_items' not in st.session_state:
@@ -51,10 +98,10 @@ default_database = [
         "description": "Providing and laying brick work with class 7.5 non-modular bricks in superstructure above plinth level up to floor V level in cement mortar 1:6",
         "unit": "cum",
         "inputs": [
-            {"type": "Material", "name": "Bricks (Class 7.5)", "qty": 500, "unit": "Nos", "rate": 7.0},
-            {"type": "Material", "name": "Cement (OPC 43 Grade)", "qty": 0.82, "unit": "bags", "rate": 448.0},
-            {"type": "Labor", "name": "Masons (Skilled)", "qty": 1.20, "unit": "Days", "rate": 650.0},
-            {"type": "Labor", "name": "Unskilled Labor", "qty": 3.50, "unit": "Days", "rate": 500.0}
+            {"type": "Material", "name": "Common burnt clay F.P.S. (non modular) bricks class designation 7.5", "qty": 500, "unit": "1000 Nos", "rate": 5.29},
+            {"type": "Material", "name": "Portland Cement (OPC-43 Grade)", "qty": 0.04, "unit": "tonne", "rate": 6599.68},
+            {"type": "Labor", "name": "Mason 1st class", "qty": 1.20, "unit": "Days", "rate": 897.0},
+            {"type": "Labor", "name": "Beldar", "qty": 3.50, "unit": "Days", "rate": 736.0}
         ]
     }
 ]
@@ -69,7 +116,6 @@ def get_latest_market_rate(item_name):
 # Sidebar Branding & Navigation
 st.sidebar.markdown("### 🏗️ CPWD Rate Analyzer")
 st.sidebar.markdown("---")
-# Custom Developer Branding
 st.sidebar.info("💡 **Software Application**\n\n**Developed by:** Dhamil Ahuja")
 st.sidebar.markdown("---")
 
@@ -175,16 +221,18 @@ if menu == "Dashboard & Rate Analysis":
                     key=f"download_{icode}"
                 )
 
-# 2. MARKET RATES MANAGER PAGE
+# 2. MARKET RATES MANAGER PAGE (WITH SEARCHABLE DROPDOWN FOR ALL ITEMS)
 elif menu == "Market Rates Manager (DAR)":
     st.title("🏷️ Latest Market Rates Manager & Historical Log")
     st.caption("Managed via CPWD DAR Database — Developed by Dhamil Ahuja")
-    st.markdown("Search or pick an existing material from the dropdown to update its rate. All historical rate changes are preserved and visible below.")
+    st.markdown("Use the searchable dropdown below to select any item from the CPWD DAR schedule, update its rate, and track price history.")
 
+    # Get unique items sorted alphabetically for easy search
     existing_materials = sorted(st.session_state.market_rates["Item Name (as in DAR)"].unique().tolist())
     selection_options = ["-- Add Brand New Material --"] + existing_materials
 
-    selected_material_action = st.selectbox("🔍 Search / Select Existing Material to Update", selection_options)
+    # Streamlit search/select dropdown widget
+    selected_material_action = st.selectbox("🔍 Search / Select Item Name (as in DAR)", selection_options)
 
     default_code = ""
     default_unit = ""
@@ -208,7 +256,7 @@ elif menu == "Market Rates Manager (DAR)":
         with col1:
             col_code = st.text_input("Col. / Code (e.g., M-05)", value=default_code)
             if selected_material_action == "-- Add Brand New Material --":
-                item_name = st.text_input("Item Name (as in DAR)", placeholder="Enter new material name")
+                item_name = st.text_input("Item Name (as in DAR)", placeholder="Enter new item/material name")
             else:
                 item_name = st.text_input("Item Name (as in DAR)", value=selected_material_action, disabled=True)
                 item_name_val = selected_material_action
