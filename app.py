@@ -1,345 +1,444 @@
 import streamlit as st
 import pandas as pd
 import datetime
+from PIL import Image
+import os
 
 # Page Configuration
 st.set_page_config(
-    page_title="CPWD Rate Analysis Software | Developed by Dhamil Ahuja",
+    page_title="MDAS | CPWD Rate Analysis Software",
     page_icon="🏗️",
     layout="wide"
 )
 
-# Initialize Session State with Comprehensive CPWD Basic Rates Database (Plant, Labour, Materials)
+# Initialize Session States
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
+if 'user_email' not in st.session_state:
+    st.session_state.user_email = ""
+
 if 'market_rates' not in st.session_state:
     st.session_state.market_rates = pd.DataFrame([
-        # 0.1 HIRE CHARGES OF PLANTS & MACHINERY (Representative list from schedule)
-        {"Col. / Code": "0001", "Item Name (as in DAR)": "Hire charges of Coaltar Boiler 900 to 1400 litres", "Rate (₹)": 900.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 1062.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0002", "Item Name (as in DAR)": "Hire charges of Concrete Mixer 0.25 to 0.40 cum with Hopper", "Rate (₹)": 900.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 1062.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0003", "Item Name (as in DAR)": "Hire charges of Diesel Road Roller - 8 to 10 tonne", "Rate (₹)": 3350.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 3953.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0004", "Item Name (as in DAR)": "Production cost of concrete by batch mix plant", "Rate (₹)": 450.0, "Unit": "cum", "GST (%)": 18.0, "Net Rate (₹)": 531.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0005", "Item Name (as in DAR)": "Hire charges of Diesel Truck - 9 tonne (with POL)", "Rate (₹)": 4400.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 5192.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0012", "Item Name (as in DAR)": "Vibrator (Needle type 40 mm)", "Rate (₹)": 400.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 472.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0020", "Item Name (as in DAR)": "Hydraulic Excavator (3D) with driver and fuel", "Rate (₹)": 7850.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 9263.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0030", "Item Name (as in DAR)": "Generator 250 KVA", "Rate (₹)": 3350.0, "Unit": "day", "GST (%)": 18.0, "Net Rate (₹)": 3953.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        
-        # 0.2 LABOUR
-        {"Col. / Code": "0100", "Item Name (as in DAR)": "Bandhani", "Rate (₹)": 816.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 816.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0101", "Item Name (as in DAR)": "Bhisti", "Rate (₹)": 816.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 816.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0102", "Item Name (as in DAR)": "Blacksmith 1st class", "Rate (₹)": 897.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 897.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0111", "Item Name (as in DAR)": "Carpenter 1st class", "Rate (₹)": 897.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 897.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0114", "Item Name (as in DAR)": "Beldar", "Rate (₹)": 736.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 736.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0116", "Item Name (as in DAR)": "Fitter (grade 1)", "Rate (₹)": 897.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 897.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0123", "Item Name (as in DAR)": "Mason 1st class", "Rate (₹)": 897.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 897.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0130", "Item Name (as in DAR)": "Mistry", "Rate (₹)": 897.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 897.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0131", "Item Name (as in DAR)": "Painter", "Rate (₹)": 816.0, "Unit": "day", "GST (%)": 0.0, "Net Rate (₹)": 816.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-
-        # 0.3 MATERIALS
-        {"Col. / Code": "0309", "Item Name (as in DAR)": "Paving bitumen of grade VG-10 of approved quality", "Rate (₹)": 33530.0, "Unit": "tonne", "GST (%)": 18.0, "Net Rate (₹)": 39565.4, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0310", "Item Name (as in DAR)": "Bitumen emulsion", "Rate (₹)": 33850.0, "Unit": "tonne", "GST (%)": 18.0, "Net Rate (₹)": 39943.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0367", "Item Name (as in DAR)": "Portland Cement (OPC-43 Grade)", "Rate (₹)": 5156.0, "Unit": "tonne", "GST (%)": 28.0, "Net Rate (₹)": 6599.68, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0368", "Item Name (as in DAR)": "White Cement", "Rate (₹)": 10500.0, "Unit": "tonne", "GST (%)": 28.0, "Net Rate (₹)": 13440.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0982", "Item Name (as in DAR)": "Coarse sand (zone III)", "Rate (₹)": 1450.0, "Unit": "cum", "GST (%)": 5.0, "Net Rate (₹)": 1522.5, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "0983", "Item Name (as in DAR)": "Fine sand (zone IV)", "Rate (₹)": 980.0, "Unit": "cum", "GST (%)": 5.0, "Net Rate (₹)": 1029.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "1002", "Item Name (as in DAR)": "Mild steel round bar 12 mm dia and below", "Rate (₹)": 5550.0, "Unit": "quintal", "GST (%)": 18.0, "Net Rate (₹)": 6549.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "1003", "Item Name (as in DAR)": "Mild steel round bar above 12 mm dia", "Rate (₹)": 5450.0, "Unit": "quintal", "GST (%)": 18.0, "Net Rate (₹)": 6431.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "1005", "Item Name (as in DAR)": "Twisted steel/ deformed TMT bars Fe-500D", "Rate (₹)": 5550.0, "Unit": "quintal", "GST (%)": 18.0, "Net Rate (₹)": 6549.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "1007", "Item Name (as in DAR)": "Structural steel such as tees, angles channels and R.S. joists", "Rate (₹)": 5965.0, "Unit": "quintal", "GST (%)": 18.0, "Net Rate (₹)": 7038.7, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "1157", "Item Name (as in DAR)": "Stone for masonry work", "Rate (₹)": 1250.0, "Unit": "cum", "GST (%)": 5.0, "Net Rate (₹)": 1312.5, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "1235", "Item Name (as in DAR)": "Diesel", "Rate (₹)": 89.62, "Unit": "litre", "GST (%)": 0.0, "Net Rate (₹)": 89.62, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "1545", "Item Name (as in DAR)": "G.I. pipes 15 mm dia", "Rate (₹)": 107.0, "Unit": "metre", "GST (%)": 18.0, "Net Rate (₹)": 126.26, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "1546", "Item Name (as in DAR)": "G.I. pipes 20 mm dia", "Rate (₹)": 139.0, "Unit": "metre", "GST (%)": 18.0, "Net Rate (₹)": 164.02, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "1984", "Item Name (as in DAR)": "Common burnt clay F.P.S. bricks tile class designation 10", "Rate (₹)": 4750.0, "Unit": "1000 Nos", "GST (%)": 12.0, "Net Rate (₹)": 5320.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "2602", "Item Name (as in DAR)": "Common burnt clay F.P.S. (non modular) bricks class designation 7.5", "Rate (₹)": 4724.0, "Unit": "1000 Nos", "GST (%)": 12.0, "Net Rate (₹)": 5290.88, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "7737", "Item Name (as in DAR)": "Fly ash bricks conforming to I.S. 12894", "Rate (₹)": 4500.0, "Unit": "1000 Nos", "GST (%)": 12.0, "Net Rate (₹)": 5040.0, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"},
-        {"Col. / Code": "8655", "Item Name (as in DAR)": "Autoclaved aerated cement (AAC) blocks", "Rate (₹)": 2915.0, "Unit": "cum", "GST (%)": 18.0, "Net Rate (₹)": 3439.7, "Date": "2023-04-01", "Vendor": "CPWD Official Standard[cite: 2]"}
+        {
+            "Col. / Code": "0367",
+            "Item Name (as in DAR)": "Portland Cement (OPC-43 Grade)",
+            "Rate (₹)": 5156.0,
+            "Unit": "tonne",
+            "GST (%)": 28.0,
+            "Net Rate (₹)": 6599.68,
+            "Date": "2026-04-01",
+            "Vendor": "UltraTech Cement Ltd."
+        },
+        {
+            "Col. / Code": "0982",
+            "Item Name (as in DAR)": "Coarse sand (zone III)",
+            "Rate (₹)": 1450.0,
+            "Unit": "cum",
+            "GST (%)": 5.0,
+            "Net Rate (₹)": 1522.5,
+            "Date": "2026-04-01",
+            "Vendor": "Delhi Sands Corp"
+        },
+        {
+            "Col. / Code": "0123",
+            "Item Name (as in DAR)": "Mason 1st class",
+            "Rate (₹)": 897.0,
+            "Unit": "day",
+            "GST (%)": 0.0,
+            "Net Rate (₹)": 897.0,
+            "Date": "2026-04-01",
+            "Vendor": "National Labor Board"
+        }
     ])
+
+if 'custom_dsr_items' not in st.session_state:
+    st.session_state.custom_dsr_items = []
+
+if 'analysis_factors' not in st.session_state:
+    st.session_state.analysis_factors = {}
 
 if 'boq_items' not in st.session_state:
     st.session_state.boq_items = []
 
-if 'custom_database' not in st.session_state:
-    st.session_state.custom_database = []
-
-if 'analysis_custom_factors' not in st.session_state:
-    st.session_state.analysis_custom_factors = {}
-
-# Mock Default Database mapping CPWD DSR Items
-default_database = [
-    {
-        "item_code": "4.1.1",
-        "chapter": "Chapter 4: Brick Work",
-        "description": "Providing and laying brick work with class 7.5 non-modular bricks in superstructure above plinth level up to floor V level in cement mortar 1:6",
-        "unit": "cum",
-        "inputs": [
-            {"type": "Material", "name": "Common burnt clay F.P.S. (non modular) bricks class designation 7.5", "qty": 500, "unit": "1000 Nos", "rate": 5.29},
-            {"type": "Material", "name": "Portland Cement (OPC-43 Grade)", "qty": 0.04, "unit": "tonne", "rate": 6599.68},
-            {"type": "Labor", "name": "Mason 1st class", "qty": 1.20, "unit": "Days", "rate": 897.0},
-            {"type": "Labor", "name": "Beldar", "qty": 3.50, "unit": "Days", "rate": 736.0}
-        ]
-    }
-]
-
-def get_latest_market_rate(item_name):
+# Helper: Get Latest Rate, Date, and Vendor details for DSR Basic Code
+def get_market_rate_details(item_name):
     df_m = st.session_state.market_rates
     filtered = df_m[df_m["Item Name (as in DAR)"].str.lower() == item_name.lower()]
     if not filtered.empty:
-        return float(filtered.iloc[-1]["Net Rate (₹)"])
-    return 100.0
+        latest = filtered.iloc[-1]
+        return {
+            "net_rate": float(latest["Net Rate (₹)"]),
+            "date": str(latest["Date"]),
+            "vendor": str(latest["Vendor"])
+        }
+    return {"net_rate": 100.0, "date": "N/A", "vendor": "N/A"}
 
-# Sidebar Branding & Navigation
-st.sidebar.markdown("### 🏗️ CPWD Rate Analyzer")
-st.sidebar.markdown("---")
-st.sidebar.info("💡 **Software Application**\n\n**Developed by:** Dhamil Ahuja")
+# ==========================================
+# 1ST PAGE: LOGIN WITH GOOGLE ID
+# ==========================================
+if not st.session_state.logged_in:
+    col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
+    with col_l2:
+        st.markdown("<h1 style='text-align: center; color: #ff4b4b;'>MDAS</h1>", unsafe_allow_html=True)
+        st.markdown("<h3 style='text-align: center;'>CPWD Rate Analysis Enterprise Portal</h3>", unsafe_allow_html=True)
+        
+        # Display Logo if available
+        if os.path.exists("mdas.jpg"):
+            st.image("mdas.jpg", use_column_width=True)
+        
+        st.markdown("---")
+        with st.form("google_login_form"):
+            st.markdown("#### 🔐 Secure Authentication")
+            google_email = st.text_input("Enter your Google ID / Corporate Email", placeholder="name@company.com")
+            login_btn = st.form_submit_button("Sign in with Google")
+            
+            if login_btn:
+                if google_email and ("@" in google_email):
+                    st.session_state.logged_in = True
+                    st.session_state.user_email = google_email
+                    st.success("Authentication successful!")
+                    st.rerun()
+                else:
+                    st.error("Please enter a valid Google ID / Email.")
+    st.stop()
+
+# ==========================================
+# SIDEBAR & CORPORATE BRANDING (MDAS)
+# ==========================================
+st.sidebar.markdown("# 🏢 MDAS Portal")
+if os.path.exists("mdas.jpg"):
+    st.sidebar.image("mdas.jpg", width=180)
+st.sidebar.caption(f"User: **{st.session_state.user_email}**")
 st.sidebar.markdown("---")
 
-menu = st.sidebar.selectbox("Navigation", [
-    "Dashboard & Rate Analysis", 
-    "Market Rates Manager (DAR)", 
-    "Upload CPWD DAR/DSR File", 
-    "Project BOQ Estimator"
+app_page = st.sidebar.selectbox("Navigation Menu", [
+    "2nd Page: Select & Create Rate Analysis", 
+    "3rd Page: Market Rates Manager", 
+    "Project BOQ Estimator & Report Export"
 ])
 
-# 1. DASHBOARD & RATE ANALYSIS
-if menu == "Dashboard & Rate Analysis":
-    st.title("📊 CPWD Rate Analysis & Factor Adjustments")
-    st.caption("Professional Rate Analysis System — Developed by Dhamil Ahuja")
-    st.markdown("View item breakdowns, add custom material factors (wastage, cartage, extra coefficients), and analyze final rates.")
+if st.sidebar.button("🚪 Log Out"):
+    st.session_state.logged_in = False
+    st.session_state.user_email = ""
+    st.rerun()
 
-    search_query = st.text_input("🔍 Search Item by Code or Description", "")
-    all_items = default_database + st.session_state.custom_database
+# ==========================================
+# 2ND PAGE: SELECT ITEMS & CREATE ANALYSIS
+# ==========================================
+if app_page == "2nd Page: Select & Create Rate Analysis":
+    st.title("📊 MDAS Rate Analysis Workbench")
+    st.markdown("Select CPWD DSR heads and items to run left-side rate analysis, alter factors, or create custom Non-DSR items.")
 
-    for item in all_items:
-        icode = item['item_code']
-        if search_query.lower() in icode.lower() or search_query.lower() in item['description'].lower():
-            with st.expander(f"**{icode}** - {item['description']} ({item['unit']})"):
-                st.write(f"**Chapter:** {item['chapter']}")
-                
-                if icode not in st.session_state.analysis_custom_factors:
-                    st.session_state.analysis_custom_factors[icode] = []
+    tab_dsr, tab_nondsr = st.tabs(["📁 CPWD DSR Items Analysis", "⚙️ Non-DSR Items (MDAS Code Assignment)"])
 
-                subtotal = 0
-                table_data = []
-                
-                for inp in item['inputs']:
-                    current_rate = get_latest_market_rate(inp['name'])
-                    total_cost = inp['qty'] * current_rate
-                    subtotal += total_cost
-                    table_data.append({
-                        "Input Type": inp['type'],
-                        "Description": inp['name'],
-                        "Quantity": inp['qty'],
-                        "Unit": inp['unit'],
-                        "Unit Rate (₹)": current_rate,
-                        "Amount (₹)": round(total_cost, 2)
-                    })
+    # STANDARD DSR ITEMS TAB
+    with tab_dsr:
+        st.subheader("1. Select Head & Item as per DSR")
+        
+        col_h1, col_h2 = st.columns(2)
+        with col_h1:
+            dsr_head = st.selectbox("Select Head (As per DSR)", [
+                "Chapter 4: Brick Work", 
+                "Chapter 5: Reinforced Cement Concrete (RCC)", 
+                "Chapter 6: Steel Reinforcement",
+                "Chapter 11: Surface Dressing & Earthwork"
+            ])
+        with col_h2:
+            if "Brick Work" in dsr_head:
+                dsr_items = {
+                    "4.1.1": "Providing and laying brick work with class 7.5 non-modular bricks in superstructure above plinth level up to floor V level in cement mortar 1:6",
+                    "4.1.2": "Providing and laying brick work with class 7.5 non-modular bricks in superstructure above plinth level up to floor V level in cement mortar 1:4"
+                }
+            elif "RCC" in dsr_head:
+                dsr_items = {
+                    "5.1.2": "Providing and laying in position plain cement concrete 1:4:8 (1 cement : 4 coarse sand : 8 graded stone aggregate 40 mm nominal size)",
+                    "5.2.1": "Reinforced cement concrete work in walls (any thickness) including attached pilasters, buttresses, plinth and string courses up to floor V level"
+                }
+            else:
+                dsr_items = {
+                    "6.1.1": "Steel reinforcement for R.C.C. work including straightening, cutting, bending, placing in position and binding all complete up to plinth level - TMT bars"
+                }
 
-                for idx, factor in enumerate(st.session_state.analysis_custom_factors[icode]):
-                    f_cost = factor['qty'] * factor['rate']
-                    subtotal += f_cost
-                    table_data.append({
-                        "Input Type": f"Custom ({factor['factor_type']})",
-                        "Description": factor['name'],
-                        "Quantity": factor['qty'],
-                        "Unit": factor['unit'],
-                        "Unit Rate (₹)": factor['rate'],
-                        "Amount (₹)": round(f_cost, 2)
-                    })
-                
-                df_inputs = pd.DataFrame(table_data)
-                st.table(df_inputs)
+            selected_code = st.selectbox("Select Item (As per DSR)", list(dsr_items.keys()), format_func=lambda x: f"{x}: {dsr_items[x][:65]}...")
 
-                with st.form(key=f"factor_form_{icode}"):
-                    st.subheader("➕ Add Custom Factor / Material (e.g., Wastage, Cartage, Extra Haulage)")
-                    f_col1, f_col2, f_col3, f_col4 = st.columns(4)
-                    with f_col1:
-                        f_name = st.text_input("Factor/Material Name", placeholder="e.g., Steel Wastage / Extra Cartage")
-                        f_type = st.selectbox("Category", ["Wastage Factor", "Cartage / Transport", "Extra Material", "Handling Charge"], key=f"type_{icode}")
-                    with f_col2:
-                        f_qty = st.number_input("Quantity / Multiplier", min_value=0.001, value=1.0, step=0.1, key=f"qty_{icode}")
-                        f_unit = st.text_input("Unit", value="Nos/Cum/MT", key=f"unit_{icode}")
-                    with f_col3:
-                        f_rate = st.number_input("Unit Rate (₹)", min_value=0.0, value=50.0, step=1.0, key=f"rate_{icode}")
-                    with f_col4:
-                        st.write("")
-                        st.write("")
-                        add_factor_btn = st.form_submit_button("Add Factor to Analysis")
-                    
-                    if add_factor_btn and f_name:
-                        st.session_state.analysis_custom_factors[icode].append({
-                            "name": f_name,
-                            "factor_type": f_type,
-                            "qty": f_qty,
-                            "unit": f_unit,
-                            "rate": f_rate
-                        })
-                        st.success("Factor added successfully! Refreshing...")
-                        st.rerun()
+        st.info(f"**Item Specification:** {dsr_items[selected_code]}")
 
-                water_charges = subtotal * 0.01 
-                cost_with_water = subtotal + water_charges
-                cp_and_oh = cost_with_water * 0.15 
-                grand_total = cost_with_water + cp_and_oh
+        # Default DAR / DSR coefficients mapping basic material/labor requirements
+        if selected_code in ["4.1.1", "4.1.2"]:
+            required_inputs = [
+                {"type": "Material", "name": "Common burnt clay F.P.S. (non modular) bricks class designation 7.5", "qty": 500, "unit": "1000 Nos"},
+                {"type": "Material", "name": "Portland Cement (OPC-43 Grade)", "qty": 0.04, "unit": "tonne"},
+                {"type": "Material", "name": "Coarse sand (zone III)", "qty": 0.30, "unit": "cum"},
+                {"type": "Labor", "name": "Mason 1st class", "qty": 1.20, "unit": "day"},
+                {"type": "Labor", "name": "Beldar", "qty": 3.50, "unit": "day"}
+            ]
+        elif selected_code in ["5.1.2", "5.2.1"]:
+            required_inputs = [
+                {"type": "Material", "name": "Portland Cement (OPC-43 Grade)", "qty": 0.12, "unit": "tonne"},
+                {"type": "Material", "name": "Coarse sand (zone III)", "qty": 0.45, "unit": "cum"},
+                {"type": "Labor", "name": "Mason 1st class", "qty": 0.80, "unit": "day"},
+                {"type": "Labor", "name": "Beldar", "qty": 3.00, "unit": "day"}
+            ]
+        else:
+            required_inputs = [
+                {"type": "Material", "name": "Mild steel round bar 12 mm dia and below", "qty": 1.05, "unit": "quintal"},
+                {"type": "Labor", "name": "Blacksmith 1st class", "qty": 0.50, "unit": "day"},
+                {"type": "Labor", "name": "Beldar", "qty": 0.50, "unit": "day"}
+            ]
 
-                col1, col2, col3 = st.columns(3)
-                col1.metric("Base Cost Subtotal", f"₹ {subtotal:.2f}")
-                col2.metric("With Water Charges (1%)", f"₹ {cost_with_water:.2f}")
-                col3.metric("Final Rate (incl. 15% OH & CP)", f"₹ {grand_total:.2f} per {item['unit']}")
+        st.markdown("---")
+        st.markdown("### 📋 Left-Side Create Analysis & Alter Analysis Workbench")
+        st.markdown("Basic rates are automatically pulled from latest Market Rates. Use the form below to **add or subtract factors** (wastage, cartage, deductions).")
 
-                csv_export = df_inputs.to_csv(index=False).encode('utf-8')
-                st.download_button(
-                    label=f"📥 Download Rate Analysis ({icode}) as CSV",
-                    data=csv_export,
-                    file_name=f"rate_analysis_{icode}.csv",
-                    mime="text/csv",
-                    key=f"download_{icode}"
-                )
+        if selected_code not in st.session_state.analysis_factors:
+            st.session_state.analysis_factors[selected_code] = []
 
-# 2. MARKET RATES MANAGER PAGE (WITH SEARCHABLE DROPDOWN FOR ALL ITEMS)
-elif menu == "Market Rates Manager (DAR)":
-    st.title("🏷️ Latest Market Rates Manager & Historical Log")
-    st.caption("Managed via CPWD DAR Database — Developed by Dhamil Ahuja")
-    st.markdown("Use the searchable dropdown below to select any item from the CPWD DAR schedule, update its rate, and track price history.")
+        subtotal = 0
+        analysis_table = []
 
-    existing_materials = sorted(st.session_state.market_rates["Item Name (as in DAR)"].unique().tolist())
-    selection_options = ["-- Add Brand New Material --"] + existing_materials
+        # 1. Fetch Basic Rates from DSR Codes
+        for inp in required_inputs:
+            details = get_market_rate_details(inp['name'])
+            unit_net_rate = details["net_rate"]
+            total_amt = inp['qty'] * unit_net_rate
+            subtotal += total_amt
+            analysis_table.append({
+                "Component Type": inp['type'],
+                "Item Name (As in DAR)": inp['name'],
+                "Quantity": inp['qty'],
+                "Unit": inp['unit'],
+                "Basic Rate (Auto-Synced) (₹)": unit_net_rate,
+                "Last Updated Date": details["date"],
+                "Vendor Details": details["vendor"],
+                "Total Amount (₹)": round(total_amt, 2)
+            })
 
-    selected_material_action = st.selectbox("🔍 Search / Select Item Name (as in DAR)", selection_options)
+        # 2. Add or Subtract Factors
+        for idx, fac in enumerate(st.session_state.analysis_factors[selected_code]):
+            fac_amt = fac['qty'] * fac['rate']
+            if fac['is_subtraction']:
+                fac_amt = -fac_amt
+            subtotal += fac_amt
+            analysis_table.append({
+                "Component Type": f"Factor ({fac['category']})",
+                "Item Name (As in DAR)": fac['name'],
+                "Quantity": fac['qty'],
+                "Unit": fac['unit'],
+                "Basic Rate (Auto-Synced) (₹)": fac['rate'],
+                "Last Updated Date": str(datetime.date.today()),
+                "Vendor Details": "MDAS Custom Factor",
+                "Total Amount (₹)": round(fac_amt, 2)
+            })
 
-    default_code = ""
-    default_unit = ""
-    default_vendor = ""
-    default_rate = 100.0
-    default_gst = 18.0
+        df_rate_analysis = pd.DataFrame(analysis_table)
+        st.dataframe(df_rate_analysis, use_container_width=True)
 
-    if selected_material_action != "-- Add Brand New Material --":
-        matched_rows = st.session_state.market_rates[st.session_state.market_rates["Item Name (as in DAR)"] == selected_material_action]
-        if not matched_rows.empty:
-            latest_record = matched_rows.iloc[-1]
-            default_code = str(latest_record["Col. / Code"])
-            default_unit = str(latest_record["Unit"])
-            default_vendor = str(latest_record["Vendor"])
-            default_rate = float(latest_record["Rate (₹)"])
-            default_gst = float(latest_record["GST (%)"])
+        # Alter Analysis Form
+        with st.form(key=f"alter_analysis_form_{selected_code}"):
+            st.markdown("#### ➕ Add or ➖ Subtract Factors to Analysis")
+            fc1, fc2, fc3, fc4, fc5 = st.columns(5)
+            with fc1:
+                f_name = st.text_input("Factor Description", placeholder="e.g., Steel Wastage / Special Transport")
+            with fc2:
+                f_cat = st.selectbox("Category", ["Wastage Allowance", "Cartage & Freight", "Extra Coefficient", "General Deduction"])
+            with fc3:
+                f_qty = st.number_input("Quantity / Multiplier", value=1.0, step=0.1)
+            with fc4:
+                f_rate = st.number_input("Rate (₹)", value=100.0, step=10.0)
+                f_sub = st.checkbox("Subtract / Deduct this Factor")
+            with fc5:
+                st.write("")
+                st.write("")
+                apply_fac = st.form_submit_button("Update Analysis")
+            
+            if apply_fac and f_name:
+                st.session_state.analysis_factors[selected_code].append({
+                    "name": f_name,
+                    "category": f_cat,
+                    "qty": f_qty,
+                    "rate": f_rate,
+                    "is_deduction": f_sub
+                })
+                st.success("Factor successfully updated!")
+                st.rerun()
+
+        # CPWD Final Totals
+        water_chg = subtotal * 0.01
+        cost_w_water = subtotal + water_chg
+        cp_oh = cost_w_water * 0.15
+        final_grand_total = cost_w_water + cp_oh
+
+        mc1, mc2, mc3 = st.columns(3)
+        mc1.metric("Subtotal", f"₹ {subtotal:,.2f}")
+        mc2.metric("With Water Charges (1%)", f"₹ {cost_w_water:,.2f}")
+        mc3.metric("Final Rate (incl. 15% OH & CP)", f"₹ {final_grand_total:,.2f} per {dsr_items[selected_code][:15]}...")
+
+        # Excel Download
+        csv_data = df_rate_analysis.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="📥 Download Rate Analysis Report as Excel/CSV",
+            data=csv_data,
+            file_name=f"mdas_rate_analysis_{selected_code}.csv",
+            mime="text/csv"
+        )
+
+    # NON-DSR ITEMS TAB
+    with tab_nondsr:
+        st.subheader("⚙️ Non-DSR Items Analysis & MDAS Code Assignment")
+        st.markdown("Assign custom codes prefixed with `MDAS-` and map them to any standard DSR chapter head.")
+
+        with st.form("nondsr_create_form"):
+            nd_chapter = st.selectbox("Assign to DSR Head / Chapter", [
+                "Chapter 4: Brick Work", 
+                "Chapter 5: Reinforced Cement Concrete (RCC)", 
+                "Chapter 6: Steel Reinforcement",
+                "Chapter 13: Repair Works"
+            ])
+            nd_code = st.text_input("Custom Code", value="MDAS-01", placeholder="e.g., MDAS-CIVIL-01")
+            nd_desc = st.text_area("Non-DSR Item Description", placeholder="Enter complete specifications...")
+            nd_unit = st.text_input("Unit", value="cum")
+            nd_rate = st.number_input("Estimated Base Rate (₹)", min_value=0.0, value=2000.0, step=50.0)
+
+            save_nondsr = st.form_submit_button("Register Non-DSR Item")
+            if save_nondsr and nd_code and nd_desc:
+                st.session_state.custom_dsr_items.append({
+                    "item_code": nd_code,
+                    "chapter": nd_chapter,
+                    "description": nd_desc,
+                    "unit": nd_unit,
+                    "inputs": [{"type": "Non-DSR Direct", "name": nd_desc, "qty": 1.0, "unit": nd_unit, "rate": nd_rate}]
+                })
+                st.success(f"Successfully created Non-DSR item code `{nd_code}` under {nd_chapter}!")
+
+        if st.session_state.custom_dsr_items:
+            st.markdown("### Registered Non-DSR Items")
+            df_nondsr = pd.DataFrame(st.session_state.custom_dsr_items)
+            st.dataframe(df_nondsr[["item_code", "chapter", "description", "unit"]], use_container_width=True)
+
+# ==========================================
+# 3RD PAGE: MARKET RATE MANAGER
+# ==========================================
+elif app_page == "3rd Page: Market Rates Manager":
+    st.title("🏷️ MDAS Market Rates Manager (DSR Auto-Sync)")
+    st.markdown("Select basic codes/items from DSR schedule via dropdown list, update rates, GST, unit, vendor details, and dates. These rates automatically update basic rates across all rate analyses.")
+
+    dsr_basic_library = [
+        "Portland Cement (OPC-43 Grade)",
+        "White Cement",
+        "Coarse sand (zone III)",
+        "Fine sand (zone IV)",
+        "Mild steel round bar 12 mm dia and below",
+        "Mild steel round bar above 12 mm dia",
+        "Twisted steel/ deformed TMT bars Fe-500D",
+        "Structural steel such as tees, angles channels and R.S. joists",
+        "Common burnt clay F.P.S. bricks tile class designation 10",
+        "Common burnt clay F.P.S. (non modular) bricks class designation 7.5",
+        "Fly ash bricks conforming to I.S. 12894",
+        "Mason 1st class",
+        "Blacksmith 1st class",
+        "Carpenter 1st class",
+        "Beldar"
+    ]
+
+    selected_mkt_item = st.selectbox("🔍 Select Item from Basic Codes of DSR", ["-- Add Brand New Material --"] + dsr_basic_library)
+
+    default_item_val = "" if selected_mkt_item == "-- Add Brand New Material --" else selected_mkt_item
 
     with st.form("market_rate_form"):
-        st.subheader("Update / Add Rate Entry")
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            col_code = st.text_input("Col. / Code (e.g., M-05)", value=default_code)
-            if selected_material_action == "-- Add Brand New Material --":
-                item_name = st.text_input("Item Name (as in DAR)", placeholder="Enter new item/material name")
-            else:
-                item_name = st.text_input("Item Name (as in DAR)", value=selected_material_action, disabled=True)
-                item_name_val = selected_material_action
-        with col2:
-            base_rate = st.number_input("Base Rate (₹)", min_value=0.0, value=default_rate, step=1.0)
-            unit = st.text_input("Unit (e.g., Bag, Cum, MT, Nos)", value=default_unit)
-        with col3:
-            gst_pct = st.number_input("GST (%)", min_value=0.0, max_value=100.0, value=default_gst, step=0.5)
-            vendor = st.text_input("Vendor Name", value=default_vendor)
-        
-        date_procured = st.date_input("Rate Effective Date", datetime.date.today())
+        st.subheader("Update / Add Market Rate Entry")
+        mc1, mc2, mc3 = st.columns(3)
+        with mc1:
+            item_name_ui = st.text_input("Item Name (As in DAR)", value=default_item_val)
+            code_ui = st.text_input("Col. / Code", placeholder="e.g., 0367")
+        with mc2:
+            rate_ui = st.number_input("Rate (₹) (Base)", min_value=0.0, value=5156.0, step=10.0)
+            gst_ui = st.number_input("GST (%)", min_value=0.0, max_value=100.0, value=28.0, step=0.5)
+        with mc3:
+            unit_ui = st.text_input("Unit", value="tonne")
+            vendor_ui = st.text_input("Vendor Details", placeholder="e.g., UltraTech / ACC")
+            
+        date_ui = st.date_input("Date", datetime.date.today())
 
-        submitted = st.form_submit_button("Save Rate Entry (Preserves History)")
-        if submitted:
-            actual_item_name = item_name if selected_material_action == "-- Add Brand New Material --" else item_name_val
-            if col_code and actual_item_name:
-                net_rate = base_rate + (base_rate * gst_pct / 100.0)
-                new_row = {
-                    "Col. / Code": col_code,
-                    "Item Name (as in DAR)": actual_item_name,
-                    "Rate (₹)": base_rate,
-                    "Unit": unit,
-                    "GST (%)": gst_pct,
-                    "Net Rate (₹)": round(net_rate, 2),
-                    "Date": str(date_procured),
-                    "Vendor": vendor
-                }
-                st.session_state.market_rates = pd.concat([st.session_state.market_rates, pd.DataFrame([new_row])], ignore_index=True)
-                st.success(f"Successfully recorded new rate entry for {actual_item_name}! Old records are safely saved.")
-                st.rerun()
-            else:
-                st.warning("Please fill in the Code and Item Name.")
+        submit_mkt = st.form_submit_button("💾 Save Market Rate & Auto-Sync")
+        if submit_mkt and item_name_ui:
+            net_rate_calc = rate_ui + (rate_ui * gst_ui / 100.0)
+            new_entry = {
+                "Col. / Code": code_ui,
+                "Item Name (as in DAR)": item_name_ui,
+                "Rate (₹)": rate_ui,
+                "Unit": unit_ui,
+                "GST (%)": gst_ui,
+                "Net Rate (₹)": round(net_rate_calc, 2),
+                "Date": str(date_ui),
+                "Vendor": vendor_ui
+            }
+            st.session_state.market_rates = pd.concat([st.session_state.market_rates, pd.DataFrame([new_entry])], ignore_index=True)
+            st.success(f"Market rate for {item_name_ui} updated successfully! All analyses will reflect the latest price, date, and vendor.")
+            st.rerun()
 
-    st.subheader("📜 Complete Historical Market Rates Log (All Past & Current Rates)")
+    st.markdown("### 📜 Market Rates Master Log (With Complete History)")
     st.dataframe(st.session_state.market_rates, use_container_width=True)
 
-    rates_csv = st.session_state.market_rates.to_csv(index=False).encode('utf-8')
+    # Excel / CSV Download Facility
+    mkt_download_csv = st.session_state.market_rates.to_csv(index=False).encode('utf-8')
     st.download_button(
-        label="📥 Download Complete Market Rates Log as CSV",
-        data=rates_csv,
-        file_name="market_rates_dar_historical.csv",
+        label="📥 Download Market Rates Log as Excel/CSV",
+        data=mkt_download_csv,
+        file_name="mdas_market_rates_log.csv",
         mime="text/csv"
     )
 
-# 3. UPLOAD CPWD DAR/DSR FILE
-elif menu == "Upload CPWD DAR/DSR File":
-    st.title("📂 Upload CPWD DSR & DAR Sheets")
-    st.caption("Data Uploader Module — Developed by Dhamil Ahuja")
-    st.markdown("Upload your Excel schedule files to import items directly into your software database.")
+# ==========================================
+# PROJECT BOQ ESTIMATOR & EXPORT
+# ==========================================
+elif app_page == "Project BOQ Estimator & Report Export":
+    st.title("📋 MDAS Project Bill of Quantities (BOQ)")
+    st.caption("Compiled by MDAS Engineering Team")
+    st.markdown("Generate project estimates combining DSR and Non-DSR (`MDAS-`) items.")
 
-    uploaded_file = st.file_uploader("Upload Excel / CSV Data File", type=["xlsx", "csv"])
-    if uploaded_file is not None:
-        try:
-            if uploaded_file.name.endswith('.csv'):
-                df_upload = pd.read_csv(uploaded_file)
-            else:
-                df_upload = pd.read_excel(uploaded_file)
-            
-            st.success("File uploaded successfully! Preview of data:")
-            st.dataframe(df_upload.head(10), use_container_width=True)
-            st.info("Your file is loaded in memory and ready to be mapped into project estimations.")
-        except Exception as e:
-            st.error(f"Error reading file: {e}")
+    master_pool = [
+        {"item_code": "4.1.1", "description": "Brick work class 7.5 in superstructure cm 1:6", "unit": "cum", "rate": 5400.0},
+        {"item_code": "5.1.2", "description": "Plain cement concrete 1:4:8", "unit": "cum", "rate": 4850.0},
+        {"item_code": "6.1.1", "description": "Steel reinforcement TMT bars Fe-500D", "unit": "quintal", "rate": 6800.0}
+    ] + st.session_state.custom_dsr_items
 
-# 4. PROJECT BOQ ESTIMATOR
-elif menu == "Project BOQ Estimator":
-    st.title("📋 Project Bill of Quantities (BOQ) Generator")
-    st.caption("Project Estimation Module — Developed by Dhamil Ahuja")
-    st.markdown("Build your comprehensive project estimate by combining multiple DSR items.")
+    boq_sel = st.selectbox("Select Item for BOQ", [f"{i['item_code']}: {i['description'][:60]}... ({i['unit']})" for i in master_pool])
+    sel_code = boq_sel.split(":")[0]
+    matched_item = next(i for i in master_pool if i['item_code'] == sel_code)
 
-    all_items = default_database + st.session_state.custom_database
-    selected_item = st.selectbox("Select DSR Item", [f"{i['item_code']}: {i['description'][:60]}... ({i['unit']})" for i in all_items])
-    item_code_selected = selected_item.split(":")[0]
-    
-    selected_obj = next(i for i in all_items if i['item_code'] == item_code_selected)
+    default_unit_rate = matched_item.get("rate", 2500.0)
 
-    base_sub = sum(inp['qty'] * get_latest_market_rate(inp['name']) for inp in selected_obj['inputs'])
-    factor_sub = sum(f['qty'] * f['rate'] for f in st.session_state.analysis_custom_factors.get(item_code_selected, []))
-    subtotal = base_sub + factor_sub
-    
-    final_rate = (subtotal * 1.01) * 1.15 
+    q_input = st.number_input(f"Enter Quantity in {matched_item['unit']}", min_value=1.0, value=25.0)
+    r_input = st.number_input("Unit Rate (₹) [Overrideable]", value=float(default_unit_rate), step=10.0)
 
-    quantity = st.number_input(f"Enter Quantity in {selected_obj['unit']}", min_value=1.0, value=10.0)
-    
-    if st.button("Add Item to Project BOQ"):
-        total_amount = quantity * final_rate
+    if st.button("➕ Add Item to Project BOQ"):
+        total_price = q_input * r_input
         st.session_state.boq_items.append({
-            "Item Code": selected_obj['item_code'],
-            "Description": selected_obj['description'],
-            "Unit": selected_obj['unit'],
-            "Quantity": quantity,
-            "Unit Rate (INR)": round(final_rate, 2),
-            "Total Amount (INR)": round(total_amount, 2)
+            "Item Code": matched_item['item_code'],
+            "Description": matched_item['description'],
+            "Unit": matched_item['unit'],
+            "Quantity": q_input,
+            "Unit Rate (₹)": r_input,
+            "Total Amount (₹)": round(total_price, 2)
         })
-        st.success("Item added to project BOQ successfully!")
+        st.success("Item added to project BOQ!")
 
     if st.session_state.boq_items:
-        st.subheader("Current Project BOQ Summary")
-        df_boq = pd.DataFrame(st.session_state.boq_items)
-        st.dataframe(df_boq, use_container_width=True)
+        st.markdown("### Consolidated Project Estimate")
+        df_project_boq = pd.DataFrame(st.session_state.boq_items)
+        st.dataframe(df_project_boq, use_container_width=True)
 
-        project_total = df_boq["Total Amount (INR)"].sum()
-        st.metric("Project Estimated Grand Total", f"₹ {project_total:,.2f}")
+        project_grand_total = df_project_boq["Total Amount (₹)"].sum()
+        st.metric("Project BOQ Grand Total", f"₹ {project_grand_total:,.2f}")
 
-        boq_csv = df_boq.to_csv(index=False).encode('utf-8')
+        boq_csv_report = df_project_boq.to_csv(index=False).encode('utf-8')
         st.download_button(
-            label="📥 Download Full Project BOQ as CSV",
-            data=boq_csv,
-            file_name="project_boq_estimate.csv",
+            label="📥 Download Full Project BOQ as Excel/CSV Report",
+            data=boq_csv_report,
+            file_name="mdas_project_boq_estimate.csv",
             mime="text/csv"
         )
-        
-        if st.button("Clear BOQ"):
+
+        if st.button("Clear Project BOQ"):
             st.session_state.boq_items = []
             st.rerun()
